@@ -1,13 +1,12 @@
 """ duet2-startup """
 
 import os
+import sys
 import usb.core
 import usb.util
 
 ID_VENDOR = 0x0c60
 ID_PRODUCT = 0x0007
-
-dev = usb.core.find(idVendor=ID_VENDOR, idProduct=ID_PRODUCT)
 
 
 def duet_2(bm_request, w_index, payload):
@@ -80,18 +79,27 @@ cmd = {
     "Inst": 3
 }
 
+if __name__ == "__main__":
 
-try:
-    duet_2(uid["input_type"], chl["1"], cmd["Inst"])
-    duet_2(uid["input_type"], chl["2"], cmd["Inst"])
+    try:
+        dev = usb.core.find(idVendor=ID_VENDOR, idProduct=ID_PRODUCT)
 
-    # duet_2(uid["output_level"], chl["1"], vol_out(-55))
-    # duet_2(uid["output_level"], chl["2"], vol_out(-55))
+        duet_2(uid["input_type"], chl["1"], cmd["Inst"])
+        duet_2(uid["input_type"], chl["2"], cmd["Inst"])
 
-    # initial output gain can be set here instead
-    # /Library/Application Support/Apogee/Settings/DuetII8300000000002C71.xml
+        duet_2(uid["output_level"], chl["1"], vol_out(-55))
+        duet_2(uid["output_level"], chl["2"], vol_out(-55))
 
-except AttributeError:
-    print("Apogee Duet 2 not found...")
-    input("Press ENTER to list USB devices")
-    print(os.system("system_profiler SPUSBDataType"))
+        # initial output gain can be set here instead
+        # /Library/Application Support/Apogee/Settings/DuetII8300000000002C71.xml
+
+    except AttributeError:
+        print("Apogee Duet 2 not found...")
+        input("Press ENTER to list USB devices")
+        print(os.system("system_profiler SPUSBDataType"))
+
+    except usb.core.NoBackendError:
+        print("No backend available.")
+        input("Press ENTER to run \"brew install libusb\"")
+        print(os.system("brew install libusb"))
+        sys.exit()
