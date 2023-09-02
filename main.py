@@ -30,18 +30,6 @@ def duet_2(bm_request, w_index, payload):
 
     print(output)
 
-
-def vol_out(num):
-    """
-    parse in range 64-0
-    """
-
-    level = int(abs(num))
-    if level <= 64:
-        return level
-    return 40
-
-
 uid = {
     "soft_limit": 17,
     "phase": 19,
@@ -87,11 +75,8 @@ if __name__ == "__main__":
         duet_2(uid["input_type"], chl["1"], cmd["Inst"])
         duet_2(uid["input_type"], chl["2"], cmd["Inst"])
 
-        duet_2(uid["output_level"], chl["1"], vol_out(-55))
-        duet_2(uid["output_level"], chl["2"], vol_out(-55))
-
-        # initial output gain can be set here instead
-        # /Library/Application Support/Apogee/Settings/DuetII8300000000002C71.xml
+        # initial input/output gain can be set here
+        # /Library/Application Support/Apogee/Settings/DuetII<uid>.xml
 
     except AttributeError:
         print("Apogee Duet 2 not found...")
@@ -99,7 +84,7 @@ if __name__ == "__main__":
         print(os.system("system_profiler SPUSBDataType"))
 
     except usb.core.NoBackendError:
-        print("No backend available.")
+        print("No backend available...")
         input("Press ENTER to run \"brew install libusb\"")
         print(os.system("brew install libusb"))
         sys.exit()
